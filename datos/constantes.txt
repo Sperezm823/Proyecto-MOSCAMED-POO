@@ -1,4 +1,4 @@
-1;INSUMOS;millones/ton dieta;20.0;millones/ton
+1;INSUMOS;millones/ton dieta;10.0;millones/ton
 2;INSUMOS;litros huevo/ton;1.25;L/ton
 3;INSUMOS;litros huevo/jaula;4.0;L/jaula
 4;INSUMOS;l pupa hembra/jaula;10.0;L/jaula
@@ -10,4 +10,4 @@
 10;EQUIPOS;Kg/bandeja;5.0;kg/bandeja
 11;EQUIPOS;L/millón;16.0;L/millón
 12;EQUIPOS;L/criba;2.0;L/criba
-13;PERSONAL;millones/trabajador;2.5;millones/trabajador
+13;PERSONAL;millones/trabajador;3.0;millones/trabajador

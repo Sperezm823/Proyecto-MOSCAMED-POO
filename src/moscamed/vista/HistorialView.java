@@ -17,12 +17,12 @@ public class HistorialView extends JFrame {
     public HistorialView() {
         historial = new Historial();
         setTitle("Historial de escenarios calculados");
-        setSize(900, 550);
+        setSize(1000, 550);
         setLocationRelativeTo(null);
 
         modelo = new DefaultTableModel(new Object[]{
-            "ID", "Fecha", "Nivel (millones)", "Dieta 1 (Ton/sem)", "Huevo (L/día)",
-            "Pupa hembra (L/día)", "Personal"
+            "ID", "Usuario", "Fecha", "Nivel (millones)", "Dieta 1 (Ton/sem)",
+            "Huevo (L/día)", "Pupa hembra (L/día)", "Personal"
         }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -41,29 +41,11 @@ public class HistorialView extends JFrame {
         btnMostrar.setFont(new Font("Arial", Font.BOLD, 13));
         btnMostrar.addActionListener(e -> mostrarDetalles());
 
-        JButton btnEliminar = new JButton("Eliminar seleccionado");
-        btnEliminar.addActionListener(e -> {
-            int fila = tabla.getSelectedRow();
-            if (fila >= 0) {
-                int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
-                int conf = JOptionPane.showConfirmDialog(this,
-                        "¿Eliminar el escenario con ID " + id + "?",
-                        "Confirmar", JOptionPane.YES_NO_OPTION);
-                if (conf == JOptionPane.YES_OPTION) {
-                    historial.eliminarEscenario(id);
-                    modelo.removeRow(fila);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione un escenario de la tabla.");
-            }
-        });
-
         JButton btnVolver = new JButton("Volver al menú");
         btnVolver.addActionListener(e -> dispose());
 
         JPanel panelBotones = new JPanel();
         panelBotones.add(btnMostrar);
-        panelBotones.add(btnEliminar);
         panelBotones.add(btnVolver);
 
         add(new JScrollPane(tabla), BorderLayout.CENTER);
@@ -83,6 +65,7 @@ public class HistorialView extends JFrame {
         for (Escenario e : historial.listarEscenarios()) {
             modelo.addRow(new Object[]{
                 e.getIdEscenario(),
+                e.getUsuario(),
                 sdf.format(e.getFechaHora()),
                 (int) e.getNivel().getMetaMoscasMillones(),
                 String.format("%.2f", e.getResultado().getDieta1SemanalTon()),
@@ -110,7 +93,7 @@ public class HistorialView extends JFrame {
 
     private void mostrarDialogoDetalles(Escenario esc) {
         JDialog dialogo = new JDialog(this, "Detalles del Escenario ID " + esc.getIdEscenario(), true);
-        dialogo.setSize(720, 700);
+        dialogo.setSize(740, 720);
         dialogo.setLocationRelativeTo(this);
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -121,6 +104,7 @@ public class HistorialView extends JFrame {
         sb.append("  DETALLES DEL ESCENARIO\n");
         sb.append("=================================================================\n\n");
         sb.append("ID: ").append(esc.getIdEscenario()).append("\n");
+        sb.append("Solicitado por: ").append(esc.getUsuario()).append("\n");
         sb.append("Fecha: ").append(sdf.format(esc.getFechaHora())).append("\n");
         sb.append("Nivel de producción: ").append((int) esc.getNivel().getMetaMoscasMillones()).append(" millones\n\n");
 
@@ -139,14 +123,14 @@ public class HistorialView extends JFrame {
         sb.append("=================================================================\n");
         sb.append("  EQUIPOS\n");
         sb.append("=================================================================\n");
-        sb.append(String.format("Bandejas Dieta 1:        %.2f bandejas/ciclo%n", r.getBandejasDieta1()));
-        sb.append(String.format("Bandejas Dieta 2:        %.2f bandejas/ciclo%n", r.getBandejasDieta2()));
-        sb.append(String.format("Total Bandejas:          %.2f bandejas/ciclo%n", r.getTotalBandejas()));
-        sb.append(String.format("Anaqueles dieta:         %.2f anaqueles%n", r.getAnaquelesDieta()));
-        sb.append(String.format("Cribas Pupa:             %.2f cribas/ciclo%n", r.getCribasPupa()));
-        sb.append(String.format("Cribas Macho:            %.2f cribas/ciclo%n", r.getCribasMacho()));
-        sb.append(String.format("Total Cribas:            %.2f cribas%n", r.getTotalCribas()));
-        sb.append(String.format("Anaqueles cribas:        %.2f anaqueles%n", r.getAnaquelesCribas()));
+        sb.append(String.format("Bandejas Dieta 1:        %d bandejas/ciclo%n", r.getBandejasDieta1()));
+        sb.append(String.format("Bandejas Dieta 2:        %d bandejas/ciclo%n", r.getBandejasDieta2()));
+        sb.append(String.format("Total Bandejas:          %d bandejas/ciclo%n", r.getTotalBandejas()));
+        sb.append(String.format("Anaqueles dieta:         %d anaqueles%n", r.getAnaquelesDieta()));
+        sb.append(String.format("Cribas Pupa:             %d cribas/ciclo%n", r.getCribasPupa()));
+        sb.append(String.format("Cribas Macho:            %d cribas/ciclo%n", r.getCribasMacho()));
+        sb.append(String.format("Total Cribas:            %d cribas%n", r.getTotalCribas()));
+        sb.append(String.format("Anaqueles cribas:        %d anaqueles%n", r.getAnaquelesCribas()));
         sb.append("\n");
 
         sb.append("=================================================================\n");

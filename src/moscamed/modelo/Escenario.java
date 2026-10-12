@@ -7,6 +7,7 @@ public class Escenario {
     private int idEscenario;
     private String nombre;
     private Date fechaHora;
+    private String usuario;
     private NivelProduccion nivel;
     private ArrayList<Constante> constantesUsadas;
     private Resultado resultado;
@@ -14,6 +15,7 @@ public class Escenario {
     public Escenario() {
         this.fechaHora = new Date();
         this.constantesUsadas = new ArrayList<>();
+        this.usuario = "Desconocido";
     }
 
     public Escenario(int id, NivelProduccion nivel, ArrayList<Constante> constantes, Resultado resultado) {
@@ -23,6 +25,7 @@ public class Escenario {
         this.nivel = nivel;
         this.constantesUsadas = new ArrayList<>(constantes);
         this.resultado = resultado;
+        this.usuario = "Desconocido";
     }
 
     public int getIdEscenario() { return idEscenario; }
@@ -31,6 +34,8 @@ public class Escenario {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public Date getFechaHora() { return fechaHora; }
     public void setFechaHora(Date fechaHora) { this.fechaHora = fechaHora; }
+    public String getUsuario() { return usuario; }
+    public void setUsuario(String usuario) { this.usuario = usuario; }
     public NivelProduccion getNivel() { return nivel; }
     public void setNivel(NivelProduccion nivel) { this.nivel = nivel; }
     public ArrayList<Constante> getConstantesUsadas() { return constantesUsadas; }

@@ -4,9 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import moscamed.controlador.GestorConstantes;
 import moscamed.controlador.Historial;
+import moscamed.controlador.Sesion;
 import moscamed.modelo.NivelProduccion;
 import moscamed.modelo.Resultado;
 import moscamed.modelo.Escenario;
+import moscamed.modelo.Usuario;
 
 public class SeleccionNivel extends JFrame {
     private JTextField txtVariable;
@@ -42,6 +44,10 @@ public class SeleccionNivel extends JFrame {
         btnVar.addActionListener(e -> {
             try {
                 double v = Double.parseDouble(txtVariable.getText());
+                if (v <= 0) {
+                    JOptionPane.showMessageDialog(this, "El nivel debe ser mayor a 0.");
+                    return;
+                }
                 calcularYMostrar(v, true);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Ingrese un número válido.");
@@ -63,6 +69,14 @@ public class SeleccionNivel extends JFrame {
         res.calcular(nivel, gestor.getConstantes());
 
         Escenario esc = new Escenario(contadorId++, nivel, gestor.getConstantes(), res);
+
+        Usuario u = Sesion.getUsuario();
+        if (u != null) {
+            esc.setUsuario(u.getNombreUsuario());
+        } else {
+            esc.setUsuario("Desconocido");
+        }
+
         historial.agregarEscenario(esc);
 
         new Resultados(res, nivel).setVisible(true);

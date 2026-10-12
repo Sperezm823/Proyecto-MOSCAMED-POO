@@ -13,6 +13,14 @@ public class CambiarConstantes extends JFrame {
     private GestorConstantes gestor;
 
     public CambiarConstantes() {
+    if (!moscamed.controlador.Sesion.esAdministrador()) {
+        javax.swing.JOptionPane.showMessageDialog(null,
+            "Acceso denegado. Solo administradores pueden modificar constantes.");
+        dispose();
+        return;
+    }
+
+    gestor = new GestorConstantes();
         gestor = new GestorConstantes();
         setTitle("Modificar constantes del sistema");
         setSize(800, 500);

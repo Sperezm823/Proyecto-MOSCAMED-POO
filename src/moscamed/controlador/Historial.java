@@ -33,17 +33,6 @@ public class Historial {
         return escenarios;
     }
 
-    public boolean eliminarEscenario(int id) {
-        for (int i = 0; i < escenarios.size(); i++) {
-            if (escenarios.get(i).getIdEscenario() == id) {
-                escenarios.remove(i);
-                reescribirArchivo();
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Escenario buscarPorId(int id) {
         for (Escenario e : escenarios) {
             if (e.getIdEscenario() == id) return e;
@@ -100,7 +89,8 @@ public class Historial {
         sb.append(r.getCribasMacho()).append(";");
         sb.append(r.getTotalCribas()).append(";");
         sb.append(r.getAnaquelesCribas()).append(";");
-        sb.append(r.getPersonalRequerido());
+        sb.append(r.getPersonalRequerido()).append(";");
+        sb.append(e.getUsuario() != null ? e.getUsuario() : "Desconocido");
         return sb.toString();
     }
 
@@ -144,15 +134,15 @@ public class Historial {
                     r.setPupaMachoDiariaLitros(Double.parseDouble(p[8]));
                     r.setDieta2DiariaTon(Double.parseDouble(p[9]));
                     r.setDietaTotalDiariaTon(Double.parseDouble(p[10]));
-                    r.setBandejasDieta1(Double.parseDouble(p[11]));
-                    r.setBandejasDieta2(Double.parseDouble(p[12]));
-                    r.setTotalBandejas(Double.parseDouble(p[13]));
-                    r.setAnaquelesDieta(Double.parseDouble(p[14]));
-                    r.setCribasPupa(Double.parseDouble(p[15]));
-                    r.setCribasMacho(Double.parseDouble(p[16]));
-                    r.setTotalCribas(Double.parseDouble(p[17]));
-                    r.setAnaquelesCribas(Double.parseDouble(p[18]));
-                    r.setPersonalRequerido(Integer.parseInt(p[19]));
+                    r.setBandejasDieta1((int) Double.parseDouble(p[11]));
+                    r.setBandejasDieta2((int) Double.parseDouble(p[12]));
+                    r.setTotalBandejas((int) Double.parseDouble(p[13]));
+                    r.setAnaquelesDieta((int) Double.parseDouble(p[14]));
+                    r.setCribasPupa((int) Double.parseDouble(p[15]));
+                    r.setCribasMacho((int) Double.parseDouble(p[16]));
+                    r.setTotalCribas((int) Double.parseDouble(p[17]));
+                    r.setAnaquelesCribas((int) Double.parseDouble(p[18]));
+                    r.setPersonalRequerido((int) Double.parseDouble(p[19]));
 
                     Escenario esc = new Escenario();
                     esc.setIdEscenario(id);
@@ -161,6 +151,7 @@ public class Historial {
                     esc.setNivel(nivel);
                     esc.setConstantesUsadas(consts);
                     esc.setResultado(r);
+                    esc.setUsuario(p.length >= 21 && !p[20].isEmpty() ? p[20] : "Desconocido");
 
                     escenarios.add(esc);
                 } catch (NumberFormatException ex) {
@@ -169,25 +160,6 @@ public class Historial {
             }
         } catch (IOException ex) {
             System.err.println("Error al cargar historial: " + ex.getMessage());
-        }
-    }
-
-    private void reescribirArchivo() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(rutaArchivo))) {
-            for (Escenario e : escenarios) {
-                pw.println(serializar(e));
-            }
-        } catch (IOException ex) {
-            System.err.println("Error al reescribir historial: " + ex.getMessage());
-        }
-    }
-
-    public void limpiarHistorial() {
-        escenarios.clear();
-        try (PrintWriter pw = new PrintWriter(rutaArchivo)) {
-            pw.print("");
-        } catch (IOException ex) {
-            System.err.println("Error al limpiar: " + ex.getMessage());
         }
     }
 }
