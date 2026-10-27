@@ -1,2 +1,2 @@
 1;Ronaldo;Ronaldo 123;Administrador
-2;Sebas;4321;Administrador
+2;Sebas;4321;Invitado

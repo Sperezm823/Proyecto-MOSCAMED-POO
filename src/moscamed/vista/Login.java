@@ -9,14 +9,13 @@ import moscamed.modelo.Usuario;
 public class Login extends JFrame {
     private JTextField txtUsuario;
     private JPasswordField txtContrasena;
-    private JComboBox<String> cboTipo;
     private GestorUsuarios gestor;
 
     public Login() {
         gestor = new GestorUsuarios();
 
         setTitle("MOSCAMED - Iniciar Sesión");
-        setSize(450, 420);
+        setSize(450, 350);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -32,13 +31,8 @@ public class Login extends JFrame {
         panelTitulo.add(titulo);
         panelTitulo.add(subtitulo);
 
-        JPanel panelForm = new JPanel(new GridLayout(3, 1, 10, 10));
+        JPanel panelForm = new JPanel(new GridLayout(2, 1, 10, 10));
         panelForm.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
-
-        JPanel pTipo = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        pTipo.add(new JLabel("Tipo de usuario:"));
-        cboTipo = new JComboBox<>(new String[]{"Administrador", "Invitado"});
-        pTipo.add(cboTipo);
 
         JPanel pUser = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pUser.add(new JLabel("Usuario:           "));
@@ -50,7 +44,6 @@ public class Login extends JFrame {
         txtContrasena = new JPasswordField(15);
         pPass.add(txtContrasena);
 
-        panelForm.add(pTipo);
         panelForm.add(pUser);
         panelForm.add(pPass);
 
@@ -76,7 +69,6 @@ public class Login extends JFrame {
     }
 
     private void ingresar() {
-        String tipo = (String) cboTipo.getSelectedItem();
         String user = txtUsuario.getText().trim();
         String pass = new String(txtContrasena.getPassword());
 
@@ -88,12 +80,6 @@ public class Login extends JFrame {
         Usuario u = gestor.autenticar(user, pass);
         if (u == null) {
             JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.");
-            return;
-        }
-
-        if (!u.getRol().equalsIgnoreCase(tipo)) {
-            JOptionPane.showMessageDialog(this,
-                "Este usuario no es de tipo " + tipo + ".\nRol real: " + u.getRol());
             return;
         }
 

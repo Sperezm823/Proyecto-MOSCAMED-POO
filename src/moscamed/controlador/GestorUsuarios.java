@@ -59,6 +59,50 @@ public class GestorUsuarios {
         return false;
     }
 
+    public boolean modificarContrasena(int id, String nuevaContrasena) {
+        for (Usuario u : usuarios) {
+            if (u.getId() == id) {
+                u.setContrasena(nuevaContrasena);
+                guardar();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean modificarRol(int id, String nuevoRol) {
+        for (Usuario u : usuarios) {
+            if (u.getId() == id) {
+                if (u.getNombreUsuario().equals("Ronaldo")) {
+                    return false;
+                }
+                u.setRol(nuevoRol);
+                guardar();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean modificarNombreUsuario(int id, String nuevoNombre) {
+        for (Usuario u : usuarios) {
+            if (u.getId() != id && u.getNombreUsuario().equalsIgnoreCase(nuevoNombre)) {
+                return false;
+            }
+        }
+        for (Usuario u : usuarios) {
+            if (u.getId() == id) {
+                if (u.getNombreUsuario().equals("Ronaldo")) {
+                    return false;
+                }
+                u.setNombreUsuario(nuevoNombre);
+                guardar();
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<Usuario> listarUsuarios() {
         return usuarios;
     }
@@ -100,28 +144,4 @@ public class GestorUsuarios {
             System.err.println("Error al parsear usuarios: " + e.getMessage());
         }
     }
-    public boolean modificarContrasena(int id, String nuevaContrasena) {
-    for (Usuario u : usuarios) {
-        if (u.getId() == id) {
-            u.setContrasena(nuevaContrasena);
-            guardar();
-            return true;
-        }
-    }
-    return false;
-}
-
-public boolean modificarRol(int id, String nuevoRol) {
-    for (Usuario u : usuarios) {
-        if (u.getId() == id) {
-            if (u.getNombreUsuario().equals("Ronaldo")) {
-                return false;
-            }
-            u.setRol(nuevoRol);
-            guardar();
-            return true;
-        }
-    }
-    return false;
-}
 }

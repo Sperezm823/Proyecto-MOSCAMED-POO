@@ -22,7 +22,7 @@ public class GestionarUsuarios extends JFrame {
         gestor = new GestorUsuarios();
 
         setTitle("Gestionar Usuarios");
-        setSize(800, 520);
+        setSize(850, 520);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -45,22 +45,31 @@ public class GestionarUsuarios extends JFrame {
         JButton btnMostrar = new JButton("Mostrar detalles");
         btnMostrar.setBackground(new Color(46, 204, 113));
         btnMostrar.setForeground(Color.WHITE);
-        btnMostrar.setFont(new Font("Arial", Font.BOLD, 13));
+        btnMostrar.setFont(new Font("Arial", Font.BOLD, 12));
         btnMostrar.addActionListener(e -> mostrarDetalles());
 
-        JButton btnModificarPass = new JButton("Modificar contraseña");
+        JButton btnModificarNombre = new JButton("Cambiar nombre");
+        btnModificarNombre.setBackground(new Color(241, 196, 15));
+        btnModificarNombre.setForeground(Color.WHITE);
+        btnModificarNombre.setFont(new Font("Arial", Font.BOLD, 12));
+        btnModificarNombre.addActionListener(e -> modificarNombre());
+
+        JButton btnModificarPass = new JButton("Cambiar contraseña");
         btnModificarPass.setBackground(new Color(52, 152, 219));
         btnModificarPass.setForeground(Color.WHITE);
+        btnModificarPass.setFont(new Font("Arial", Font.BOLD, 12));
         btnModificarPass.addActionListener(e -> modificarContrasena());
 
         JButton btnModificarRol = new JButton("Cambiar rol");
         btnModificarRol.setBackground(new Color(155, 89, 182));
         btnModificarRol.setForeground(Color.WHITE);
+        btnModificarRol.setFont(new Font("Arial", Font.BOLD, 12));
         btnModificarRol.addActionListener(e -> modificarRol());
 
-        JButton btnEliminar = new JButton("Eliminar usuario");
+        JButton btnEliminar = new JButton("Eliminar");
         btnEliminar.setBackground(new Color(231, 76, 60));
         btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setFont(new Font("Arial", Font.BOLD, 12));
         btnEliminar.addActionListener(e -> eliminarUsuario());
 
         JButton btnVolver = new JButton("Volver al menú");
@@ -68,6 +77,7 @@ public class GestionarUsuarios extends JFrame {
 
         JPanel panelBotones = new JPanel(new FlowLayout());
         panelBotones.add(btnMostrar);
+        panelBotones.add(btnModificarNombre);
         panelBotones.add(btnModificarPass);
         panelBotones.add(btnModificarRol);
         panelBotones.add(btnEliminar);
@@ -103,10 +113,6 @@ public class GestionarUsuarios extends JFrame {
         }
 
         int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
-        String usuario = modelo.getValueAt(fila, 1).toString();
-        String contrasena = modelo.getValueAt(fila, 2).toString();
-        String rol = modelo.getValueAt(fila, 3).toString();
-
         Usuario u = null;
         for (Usuario us : gestor.listarUsuarios()) {
             if (us.getId() == id) {
@@ -153,7 +159,7 @@ public class GestionarUsuarios extends JFrame {
             sb.append("  ⚠ USUARIO PRINCIPAL DEL SISTEMA\n");
             sb.append("=================================================================\n");
             sb.append("  - No se puede eliminar\n");
-            sb.append("  - No se puede cambiar su rol\n");
+            sb.append("  - No se puede cambiar su rol ni su nombre\n");
         }
 
         JTextArea area = new JTextArea(sb.toString());
@@ -174,6 +180,41 @@ public class GestionarUsuarios extends JFrame {
         dialogo.add(new JScrollPane(area), BorderLayout.CENTER);
         dialogo.add(panelSur, BorderLayout.SOUTH);
         dialogo.setVisible(true);
+    }
+
+    private void modificarNombre() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario de la tabla.");
+            return;
+        }
+
+        int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+        String nombreActual = modelo.getValueAt(fila, 1).toString();
+
+        if (nombreActual.equals("Ronaldo")) {
+            JOptionPane.showMessageDialog(this, "No se puede cambiar el nombre del usuario principal.");
+            return;
+        }
+
+        String nuevo = JOptionPane.showInputDialog(this,
+                "Nuevo nombre de usuario (Actual: " + nombreActual + "):",
+                "Modificar nombre", JOptionPane.QUESTION_MESSAGE);
+
+        if (nuevo == null) return;
+        nuevo = nuevo.trim();
+
+        if (nuevo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.");
+            return;
+        }
+
+        if (gestor.modificarNombreUsuario(id, nuevo)) {
+            JOptionPane.showMessageDialog(this, "Nombre de usuario actualizado.");
+            cargarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error: El nombre ya está en uso o no se pudo modificar.");
+        }
     }
 
     private void modificarContrasena() {
