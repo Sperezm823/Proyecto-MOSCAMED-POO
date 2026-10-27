@@ -40,17 +40,22 @@ public class SeleccionNivel extends JFrame {
         panelVariable.add(new JLabel("Nivel variable (millones):"));
         txtVariable = new JTextField(10);
         panelVariable.add(txtVariable);
+        
         JButton btnVar = new JButton("Aceptar");
         btnVar.addActionListener(e -> {
             try {
-                double v = Double.parseDouble(txtVariable.getText());
+                double v = Double.parseDouble(txtVariable.getText().trim());
                 if (v <= 0) {
-                    JOptionPane.showMessageDialog(this, "El nivel debe ser mayor a 0.");
+                    JOptionPane.showMessageDialog(this, 
+                        "El nivel de producción debe ser mayor a 0.", 
+                        "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 calcularYMostrar(v, true);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Ingrese un número válido.");
+                JOptionPane.showMessageDialog(this, 
+                    "Ingrese un número válido (solo números positivos).", 
+                    "Error de formato", JOptionPane.ERROR_MESSAGE);
             }
         });
         panelVariable.add(btnVar);

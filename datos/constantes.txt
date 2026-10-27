@@ -10,4 +10,4 @@
 10;EQUIPOS;Kg/bandeja;5.0;kg/bandeja
 11;EQUIPOS;L/millón;16.0;L/millón
 12;EQUIPOS;L/criba;2.0;L/criba
-13;PERSONAL;millones/trabajador;3.0;millones/trabajador
+13;PERSONAL;millones/trabajador;2.5;millones/trabajador

@@ -3,6 +3,9 @@ package moscamed.vista;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import moscamed.controlador.Historial;
 import moscamed.modelo.Constante;
@@ -13,12 +16,23 @@ public class HistorialView extends JFrame {
     private JTable tabla;
     private DefaultTableModel modelo;
     private Historial historial;
+    private JTextField txtBuscar;
 
     public HistorialView() {
         historial = new Historial();
         setTitle("Historial de escenarios calculados");
         setSize(1000, 550);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelNorte.add(new JLabel("Buscar por Usuario o Nivel: "));
+        txtBuscar = new JTextField(20);
+        panelNorte.add(txtBuscar);
+        JButton btnBuscar = new JButton("Buscar");
+        JButton btnLimpiar = new JButton("Mostrar todos");
+        panelNorte.add(btnBuscar);
+        panelNorte.add(btnLimpiar);
 
         modelo = new DefaultTableModel(new Object[]{
             "ID", "Usuario", "Fecha", "Nivel (millones)", "Dieta 1 (Ton/sem)",
@@ -41,13 +55,49 @@ public class HistorialView extends JFrame {
         btnMostrar.setFont(new Font("Arial", Font.BOLD, 13));
         btnMostrar.addActionListener(e -> mostrarDetalles());
 
+        JButton btnExportar = new JButton("Exportar a CSV");
+        btnExportar.setBackground(new Color(243, 156, 18));
+        btnExportar.setForeground(Color.WHITE);
+        btnExportar.setFont(new Font("Arial", Font.BOLD, 13));
+        btnExportar.addActionListener(e -> exportarCSV());
+
         JButton btnVolver = new JButton("Volver al menú");
         btnVolver.addActionListener(e -> dispose());
 
         JPanel panelBotones = new JPanel();
         panelBotones.add(btnMostrar);
+        panelBotones.add(btnExportar);
         panelBotones.add(btnVolver);
 
+        btnBuscar.addActionListener(e -> {
+            String filtro = txtBuscar.getText().trim().toLowerCase();
+            modelo.setRowCount(0);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            
+            for (Escenario esc : historial.listarEscenarios()) {
+                String usuario = esc.getUsuario().toLowerCase();
+                String nivel = String.valueOf((int) esc.getNivel().getMetaMoscasMillones());
+                
+                if (usuario.contains(filtro) || nivel.equals(filtro) || filtro.isEmpty()) {
+                    modelo.addRow(new Object[]{
+                        esc.getIdEscenario(), esc.getUsuario(), sdf.format(esc.getFechaHora()),
+                        (int) esc.getNivel().getMetaMoscasMillones(),
+                        String.format("%.2f", esc.getResultado().getDieta1SemanalTon()),
+                        String.format("%.4f", esc.getResultado().getHuevoDiarioLitros()),
+                        String.format("%.4f", esc.getResultado().getPupaHembraDiariaLitros()),
+                        esc.getResultado().getPersonalRequerido()
+                    });
+                }
+            }
+        });
+
+        btnLimpiar.addActionListener(e -> {
+            txtBuscar.setText("");
+            modelo.setRowCount(0);
+            cargarTabla();
+        });
+
+        add(panelNorte, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
 
@@ -61,6 +111,7 @@ public class HistorialView extends JFrame {
     }
 
     private void cargarTabla() {
+        modelo.setRowCount(0);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         for (Escenario e : historial.listarEscenarios()) {
             modelo.addRow(new Object[]{
@@ -73,6 +124,61 @@ public class HistorialView extends JFrame {
                 String.format("%.4f", e.getResultado().getPupaHembraDiariaLitros()),
                 e.getResultado().getPersonalRequerido()
             });
+        }
+    }
+
+    private void exportarCSV() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar historial como CSV");
+        fileChooser.setSelectedFile(new File("Historial_Moscamed.csv"));
+        
+        int seleccion = fileChooser.showSaveDialog(this);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            if (!archivo.getName().toLowerCase().endsWith(".csv")) {
+                archivo = new File(archivo.getParent(), archivo.getName() + ".csv");
+            }
+
+            try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
+                pw.println("ID;Usuario;Fecha;Nivel (Millones);" +
+                           "Dieta 1 (Ton/sem);Dieta 1 (Ton/dia);Huevo (L/dia);Pupa Hembra (L/dia);Pupa Macho (L/dia);Dieta 2 (Ton/dia);Dieta Total (Ton/dia);" +
+                           "Bandejas Dieta 1;Bandejas Dieta 2;Total Bandejas;Anaqueles Dieta;Cribas Pupa;Cribas Macho;Total Cribas;Anaqueles Cribas;" +
+                           "Personal");
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                
+                for (Escenario e : historial.listarEscenarios()) {
+                    Resultado r = e.getResultado();
+                    pw.println(
+                        e.getIdEscenario() + ";" +
+                        e.getUsuario() + ";" +
+                        sdf.format(e.getFechaHora()) + ";" +
+                        (int) e.getNivel().getMetaMoscasMillones() + ";" +
+                        
+                        String.format("%.2f", r.getDieta1SemanalTon()) + ";" +
+                        String.format("%.4f", r.getDieta1DiariaTon()) + ";" +
+                        String.format("%.4f", r.getHuevoDiarioLitros()) + ";" +
+                        String.format("%.4f", r.getPupaHembraDiariaLitros()) + ";" +
+                        String.format("%.4f", r.getPupaMachoDiariaLitros()) + ";" +
+                        String.format("%.4f", r.getDieta2DiariaTon()) + ";" +
+                        String.format("%.4f", r.getDietaTotalDiariaTon()) + ";" +
+                        
+                        r.getBandejasDieta1() + ";" +
+                        r.getBandejasDieta2() + ";" +
+                        r.getTotalBandejas() + ";" +
+                        r.getAnaquelesDieta() + ";" +
+                        r.getCribasPupa() + ";" +
+                        r.getCribasMacho() + ";" +
+                        r.getTotalCribas() + ";" +
+                        r.getAnaquelesCribas() + ";" +
+                        
+                        r.getPersonalRequerido()
+                    );
+                }
+                JOptionPane.showMessageDialog(this, "Historial completo exportado exitosamente a:\n" + archivo.getAbsolutePath());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al exportar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
